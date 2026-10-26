@@ -1,0 +1,76 @@
+# Builds the APK with the same Docker image and scripts as a local build (./build.sh), signs it with a self-signed key,
+# and attaches it to the GitHub release when a tag v* is pushed.
+#
+# Signing key: run ./build.sh keygen once, and store the three values it prints as repository secrets
+#   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS
+# Without them every run makes a throw-away key: the APK installs, but a later build cannot update over it.
+name: Build
+
+on:
+  push:
+    branches: [master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ] && [ -n "$KEYSTORE_PASSWORD" ]; then
+            mkdir -p .signing
+            echo "$KEYSTORE_BASE64" | base64 -d > .signing/fafnirx.keystore
+            echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+            echo "KEY_ALIAS=${KEY_ALIAS:-fafnirx}" >> "$GITHUB_ENV"
+          else
+            echo "::warning::No signing key in the repository secrets: this APK is signed with a one-off key and cannot update an earlier build."
+          fi
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/gradle-home
+          key: gradle-${{ hashFiles('**/*.gradle.kts', 'gradle.properties', 'VERSION') }}
+          restore-keys: gradle-
+
+      - name: Build, test and sign (Docker)
+        run: |
+          mkdir -p "$HOME/gradle-home"
+          docker build -t fafnirx-android-build docker/
+          docker run --rm -v "$PWD":/src -v "$HOME/gradle-home":/gradle-home \
+            -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
+            -e KEYSTORE -e KEYSTORE_PASSWORD -e KEY_ALIAS \
+            fafnirx-android-build sh /src/docker/run.sh build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fafnirx-android-apk
+          path: |
+            dist/*.apk
+            dist/*.sha256
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: fafnirx-android-apk
+          path: dist
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes

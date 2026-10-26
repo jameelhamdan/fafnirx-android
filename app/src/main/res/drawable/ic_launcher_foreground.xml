@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- Same drive artwork as the fafnirx web favicon (64x64), scaled into the adaptive-icon safe zone -->
+    <group android:scaleX="0.9" android:scaleY="0.9" android:translateX="25.2" android:translateY="25.2">
+        <!-- case: dark rim, then the face -->
+        <path android:fillColor="#23693B" android:pathData="M10,11h44a7,7 0,0 1,7 7v28a7,7 0,0 1,-7 7H10a7,7 0,0 1,-7 -7V18a7,7 0,0 1,7 -7z" />
+        <path android:fillColor="#40BF6B" android:pathData="M10.5,13h43a5.5,5.5 0,0 1,5.5 5.5v27a5.5,5.5 0,0 1,-5.5 5.5h-43a5.5,5.5 0,0 1,-5.5 -5.5v-27a5.5,5.5 0,0 1,5.5 -5.5z" />
+        <!-- platter with a hub -->
+        <path android:fillColor="#9E000000" android:pathData="M25,15.5a12.5,12.5 0,1 0,0.001 0z" />
+        <path android:fillColor="#26FFFFFF" android:pathData="M25,24a4,4 0,1 0,0.001 0z" />
+        <path android:fillColor="#9E000000" android:pathData="M25,26.6a1.4,1.4 0,1 0,0.001 0z" />
+        <!-- separator and vent slits -->
+        <path android:fillColor="#4D000000" android:pathData="M9.5,41.5h45a0.5,0.5 0,0 1,0.5 0.5v0a0.5,0.5 0,0 1,-0.5 0.5h-45a0.5,0.5 0,0 1,-0.5 -0.5v0a0.5,0.5 0,0 1,0.5 -0.5z" />
+        <path android:fillColor="#9E000000" android:pathData="M12,44.5a1,1 0,0 1,1 1v2a1,1 0,0 1,-2 0v-2a1,1 0,0 1,1 -1zM17,44.5a1,1 0,0 1,1 1v2a1,1 0,0 1,-2 0v-2a1,1 0,0 1,1 -1zM22,44.5a1,1 0,0 1,1 1v2a1,1 0,0 1,-2 0v-2a1,1 0,0 1,1 -1zM27,44.5a1,1 0,0 1,1 1v2a1,1 0,0 1,-2 0v-2a1,1 0,0 1,1 -1z" />
+        <!-- activity light -->
+        <path android:fillColor="#1A1A1A" android:pathData="M49,43.5a3,3 0,1 0,0.001 0z" />
+    </group>
+</vector>
