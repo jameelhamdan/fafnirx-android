@@ -17,10 +17,10 @@ case "${1:-build}" in
     ;;
   build)
     gradle --no-daemon --console=plain :app:testDebugUnitTest :app:assembleRelease
-    ./docker/sign.sh "app/build/outputs/apk/release/app-release-unsigned.apk" "dist/fafnirx-android-${VERSION}.apk"
+    sh ./docker/sign.sh "app/build/outputs/apk/release/app-release-unsigned.apk" "dist/fafnirx-android-${VERSION}.apk"
     ;;
   keygen)
-    ./docker/sign.sh --keygen
+    sh ./docker/sign.sh --keygen
     ;;
   shell)
     exec sh
